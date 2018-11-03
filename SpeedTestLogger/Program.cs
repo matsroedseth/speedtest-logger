@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using SpeedTest;
 using SpeedTest.Models;
 using SpeedTestLogger.Models;
@@ -9,7 +10,7 @@ namespace SpeedTestLogger
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Console.WriteLine("Hello SpeedTestLogger!");
 
@@ -25,6 +26,21 @@ namespace SpeedTestLogger
                 Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
                 Data = testData
             };
+
+            var success = false;
+            using (var client = new SpeedTestApiClient(config.ApiUrl))
+            {
+                success = await client.PublishTestResult(results);
+            }
+
+            if (success)
+            {
+                Console.WriteLine("Speedtest complete!");
+            }
+            else
+            {
+                Console.WriteLine("Speedtest failed!");
+            }
 
 
         }
